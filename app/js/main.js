@@ -1,7 +1,7 @@
 // id generator: https://gist.github.com/gordonbrander/2230317
 var ID = function () {
     return '_' + Math.random().toString(36).substr(2, 9);
-  };
+};
 
 productArray = [];
 
@@ -14,14 +14,14 @@ class Product {
         this.id = ID();
     }
     set price(newPrice) {
-        if(typeof newPrice === 'number' && newPrice > 0) {
+        if (typeof newPrice === 'number' && newPrice > 0) {
             this._price = newPrice;
         }
     }
     get price() {
         return this._price;
     }
-    log() { 
+    log() {
         console.log(`product ${this.name} ${this.id}: ${this.price}`);
     }
     showPrice() {
@@ -39,11 +39,18 @@ class User {
     addCart(product) {
         this.cart.push(product);
     }
+
+    delCart(index) {
+        this.cart.splice(index, 1);
+    }
+
     showCart() {
         console.table(this.cart);
     }
 }
- 
+
+let ya = new User("ya", "sobaka@sobaka.sobaka", "420");
+
 class Admin extends User {
     constructor(name, email, age, isAdmin) {
         super(name, email, age);
@@ -52,17 +59,37 @@ class Admin extends User {
     checkUser() {
         return this.isAdmin;
     }
-}   
+}
 
-let appendDiv = e =>{
+let appendDiv = e => {
     $("div.products").append(e);
+};
+
+let addCart = (event) => {
+    let cartHtml;
+    let elemId = $(event.target).parents("div.item").attr('id');
+    for (elem of productArray) {
+        if (elem.id === elemId) {
+            cartHtml = `<li id="${elem.id}"> ${elem.brand} ${elem.name} ${elem.price + "$"} <button id="del"> Remove </button></li>`;
+            ya.addCart(elem);
+        }
+        $("div.cartbox ul").append(cartHtml);
+    }
+};
+
+let removeItem = (event) => {
+    let index;
+    let elemId = $(event.target).parents("li").attr("id");
+    $(event.target).parents("li").remove();
+    for (elem of productArray) {
+        if (elem.id === elemId) {
+            index = productArray.indexOf(elem);
+            ya.delCart(index);
+        }
+    }
 }
 
-let addCart = (e) => {
-    
-}
-
-let addProduct = () =>{
+let addProduct = () => {
     let brand = $('#brand').val();
     let model = $('#model').val();
     let price = $('#price').val();
@@ -79,11 +106,13 @@ let addProduct = () =>{
     </div>`;
     appendDiv(htmlStr);
     productArray.push(temp);
-}
+};
 
-$("#buyItem").on('click', addCart); 
+$(".products").on('click', "#buyItem", addCart);
 
-$("#addProduct").on('click', function(e){
+$(".cartbox").on('click', "#del", removeItem);
+
+$("#addProduct").on('click', function (e) {
     addProduct();
     e.preventDefault();
 });
