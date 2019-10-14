@@ -7,9 +7,9 @@ productArray = [];
 
 class Product {
     constructor(brand, name, price, imgSrc) {
+        this.brand = brand;
         this.name = name;
         this._price = price;
-        this.brand = brand;
         this.imgSrc = imgSrc;
         this.id = ID();
     }
@@ -70,23 +70,18 @@ let addCart = (event) => {
     let elemId = $(event.target).parents("div.item").attr('id');
     for (elem of productArray) {
         if (elem.id === elemId) {
-            cartHtml = `<li id="${elem.id}"> ${elem.brand} ${elem.name} ${elem.price + "$"} <button id="del"> Remove </button></li>`;
+            cartHtml = `<li> ${elem.brand} ${elem.name} ${elem.price + "$"} <button id="del"> Remove </button></li>`;
             ya.addCart(elem);
         }
-        $("div.cartbox ul").append(cartHtml);
+        
     }
+    $("div.cartbox ul").append(cartHtml);
 };
 
 let removeItem = (event) => {
-    let index;
-    let elemId = $(event.target).parents("li").attr("id");
+    let elemId = $(event.target).parents("li").index();
     $(event.target).parents("li").remove();
-    for (elem of productArray) {
-        if (elem.id === elemId) {
-            index = productArray.indexOf(elem);
-            ya.delCart(index);
-        }
-    }
+    ya.delCart(elemId);
 }
 
 let addProduct = () => {
